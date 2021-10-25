@@ -2,6 +2,9 @@
 const express = require('express');
 const app = express();
 
-app.listen(8000, () => {
-    console.log(`Server listening on port ${8000} `)
+// Settings
+app.set('port', process.env.PORT || 8000);
+
+app.listen(app.get('port'), () => {
+    console.log(`Server listening on port `,app.get('port'));
 })
