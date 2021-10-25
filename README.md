@@ -1,1 +1,6 @@
-Repositorio donde va a residir el código backend tanto de los calendarios como de los horarios
+# Repositorio backend 
+Repositorio donde va a residir el código de backend de la asigantura proyecto software.
+## Instalar dependencias
+Para instalar dependecias de módulos que otros compañeros hayan usado `npm install`
+
+
