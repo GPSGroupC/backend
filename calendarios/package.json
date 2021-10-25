@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js", 
-    "test": "jest --detectOpenHandles tests/app.test.js"
+    "test": "jest --detectOpenHandles --coverage tests/"
   },
   "keywords": [],
   "author": "",
