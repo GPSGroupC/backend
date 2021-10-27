@@ -2,9 +2,10 @@
 const express = require('express');
 const app = express();
 
-// Settings
-app.set('port', process.env.PORT || 8000);
+//var calendarRoute = require('./routes/controller.js');
 
-app.listen(app.get('port'), () => {
-    console.log(`Server listening on port `,app.get('port'));
-})
+//Routes
+app.use(require('./routes/controller'));
+
+
+module.exports = app;
