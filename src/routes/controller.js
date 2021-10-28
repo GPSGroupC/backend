@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const pruebaHeroku = require('../db/conexion')
 
 const calendar = [
     "2022" , "2023"

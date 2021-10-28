@@ -4,12 +4,11 @@
  *      IMPORTANT: Execute previusly `npm run startdb` to run a docker with postgres
  * If node server is runned in Heroku, sequelize will connect to heroku db.
  */
-
 const Sequelize = require('sequelize');
 let productionDBurl = process.env.DATABASE_URL
 
 if (productionDBurl != null) { //Conexion with production db
-    sequelize = new Sequelize(productionDBurl || localDBurl, {
+    sequelize = new Sequelize(productionDBurl, {
             dialectOptions: {
                 ssl: {
                     require: true,
