@@ -7,5 +7,4 @@ const app = express();
 //Routes
 app.use(require('./routes/controller'));
 
-
 module.exports = app;
