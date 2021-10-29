@@ -1,5 +1,8 @@
-//Postgres migration settings
+/* knex config file.
+ * This file sets postgres connection environment
+ */
 module.exports = {
+  //local
   development: {
     client: 'pg',
     connection:'postgres://postgres:postgres@localhost:5432/postgres',
@@ -9,6 +12,7 @@ module.exports = {
     useNullAsDefault: true
   },
 
+  //Heroku
   production: {
     client: 'pg',
     connection: process.env.DATABASE_URL,
