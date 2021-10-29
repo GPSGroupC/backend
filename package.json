@@ -8,7 +8,7 @@
     "test": "jest --detectOpenHandles --coverage tests/",
     "startdb": "docker pull postgres && docker run --name postgres --rm -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres &",
     "killdb": "docker rm -f postgres",
-    "heroku-postbuild": "knex migrate:rollback && knex migrate:up && knex seed:run",
+    "heroku-postbuild": "#knex migrate:up && knex seed:run",
     "nodemon": "nodemon --inspect -e js src/server.js"
   },
   "keywords": [],
