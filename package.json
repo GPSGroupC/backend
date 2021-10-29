@@ -7,15 +7,16 @@
     "start": "node src/server.js",
     "test": "jest --detectOpenHandles --coverage tests/",
     "startdb": "docker pull postgres && docker run --name postgres --rm -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres &",
-    "killdb": "docker rm -f postgres"
+    "killdb": "docker rm -f postgres",
+    "heroku-prebuild": "knex migrate:latest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "pg": "^8.7.1",
-    "sequelize": "^6.8.0"
+    "knex": "^0.95.12",
+    "pg": "^8.7.1"
   },
   "devDependencies": {
     "jest": "^27.3.1",
