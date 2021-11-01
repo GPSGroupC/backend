@@ -1,5 +1,7 @@
 const express = require('express');
+const { response } = require('..');
 const router = express.Router();
+const connection = require('../db/conexion')
 
 const calendar = [
     "2022" , "2023"
@@ -99,7 +101,7 @@ Date.prototype.addDays = function(days) {
     return date;
 }
 
-function montar_fechas (Date) {
+function montar_fechas (date) {
     return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
 }
 
@@ -160,26 +162,77 @@ router.post('/testing',(req, res) =>{
  * 
  * 
  */
-router.post('/updateCalendar',(req, res) =>{
+
+ function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [day, month, year].join('-');
+}
+
+router.post('/calendar/updateCalendar',(req, res) =>{
     
-    console.log("Recibido del front" + req.body)
+    
     const data = {
-        date_start1: req.body.fecha_inicio_1,
-        date_start2: req.body.fecha_inicio_2,
-        date_startSeptember: req.body.convSeptiembre,
+        date_start1: formatDate(req.body.fecha_inicio_1),
+        date_start2: formatDate(req.body.fecha_inicio_2),
+        date_startSeptember: formatDate(req.body.convSeptiembre),
         //fecha_fin_1 : req.body.fecha_fin_1,
         //fecha_fin_2 : req.body.fecha_fin_2,
        // fecha_inicio_ev1 : req.body.fecha_inicio_ev_1,
         //fecha_inicio_ev2 : req.body.fecha_inicio_ev_2,
         //fecha_fin_ev_1 : req.body.fecha_fin_ev_1,
         //fecha_fin_ev_2 : req.body.fecha_fin_ev_2,
-        course : req.body.curso,
+        course : req.body.course,
         grade: "Grado",
         lastUpdate: req.body.lastUpdate
 
     }
 
-    
+    const sql_query = "SELECT * FROM calendario WHERE curso = $1"
+    connection.query(sql_query,[data.course],(err, result) => {
+        if(err){
+            res.status(500)
+        }else{
+            if(result.rowCount === 0){
+              
+                const insertQuery = "INSERT into calendario (tipo,curso,fechainicio1,fechainicio2,fechainiciosept) VALUES ($1,$2,$3,$4,$5)"
+                connection.query(insertQuery,[data.grade,data.course,data.date_start1,data.date_start2,data.date_startSeptember], err =>{
+                    if(err){
+                        console.log(err)
+                        console.log(err.message)
+                        res.status(500).send("Server Error")
+                    }else{
+                        res.status(200).send("Creado nuevo curso")
+
+                    }
+                })
+            }else{
+                console.log(data)
+                const updateQuery = "UPDATE calendario SET fechainicio1=$1, fechainicio2=$2,fechainiciosept=$3 WHERE curso = $4"
+                connection.query(updateQuery,[data.date_start1,data.date_start2,data.date_startSeptember, data.course], err =>{
+                    if(err){
+                        console.log(err)
+                        console.log(err.message)
+                        res.status(500).send("Server Error")
+                    }else{
+                        res.status(200).send("Actualizado curso")
+
+                    }
+                })
+            }
+            
+
+        }
+    })
+  
 
 
 })
