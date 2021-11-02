@@ -1,5 +1,4 @@
 const express = require('express');
-const { response } = require('..');
 const router = express.Router();
 const connection = require('../db/conexion')
 
@@ -201,12 +200,10 @@ router.post('/calendar/updateCalendar',(req, res) =>{
         if(err){
             res.status(500)
         }else{
-            if(result.rowCount === 0){
-              
+            if(result.rowCount === 0){              
                 const insertQuery = "INSERT into calendario (tipo,curso,fechainicio1,fechainicio2,fechainiciosept) VALUES ($1,$2,$3,$4,$5)"
                 connection.query(insertQuery,[data.grade,data.course,data.date_start1,data.date_start2,data.date_startSeptember], err =>{
                     if(err){
-                        console.log(err)
                         console.log(err.message)
                         res.status(500).send("Server Error")
                     }else{
@@ -215,11 +212,9 @@ router.post('/calendar/updateCalendar',(req, res) =>{
                     }
                 })
             }else{
-                console.log(data)
                 const updateQuery = "UPDATE calendario SET fechainicio1=$1, fechainicio2=$2,fechainiciosept=$3 WHERE curso = $4"
                 connection.query(updateQuery,[data.date_start1,data.date_start2,data.date_startSeptember, data.course], err =>{
                     if(err){
-                        console.log(err)
                         console.log(err.message)
                         res.status(500).send("Server Error")
                     }else{
@@ -235,6 +230,23 @@ router.post('/calendar/updateCalendar',(req, res) =>{
   
 
 
+})
+
+router.get('/calendar/getCalendar',(req, res) =>{
+    
+    const sql_query = "SELECT * FROM calendario WHERE curso = $1"
+    connection.query(sql_query,[req.query.course],(err,response) =>{
+        if(err){
+            console.log(err.message)
+            res.status(500).send("Server Error")
+        }else{
+            if(response.rowCount === 0){
+                res.status(225).send("No course found")
+            }else{
+                res.status(200).send(response.rows)
+            }
+        }
+    })
 })
 
 
