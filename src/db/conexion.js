@@ -18,13 +18,16 @@ const connection = new Client({
         }
 });
 
-connection.connect(function (err) {
+
+connection.connect (function (err) {
     if(err){
         console.log('Error when connecting to db:', err);
     }else{
         console.log('Connection has been established successfully.');
     }
+    
 })
+
  //Conexion with local db
  //Diego si lees esto lo he comentado porque me dijiste de usar la de produccion cuando haya más tiempo lo miramos
 /*
