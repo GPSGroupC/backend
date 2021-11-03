@@ -1,8 +1,12 @@
 //Esto es una prubea para CI
 const express = require('express');
+const cors = require('cors')
 const app = express();
 
-//var calendarRoute = require('./routes/controller.js');
+
+app.use(express.json());
+app.use(express.urlencoded({extended : true}));
+app.use(cors());
 
 //Routes
 app.use(require('./routes/controller'));
