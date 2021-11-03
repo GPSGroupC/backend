@@ -162,6 +162,12 @@ router.post('/testing',(req, res) =>{
  * 
  */
 
+
+/**
+ * 
+ * @param {Receive a date type in any format} date 
+ * @returns the date parsed on format DD-MM-YYYY.
+ */
  function formatDate(date) {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
@@ -178,6 +184,9 @@ router.post('/testing',(req, res) =>{
 
 router.post('/calendar/updateCalendar',(req, res) =>{
     
+    console.log(req.body)
+    let date = new Date()
+    const lUpdate = date.getDay() + "-" + (date.getMonth() + 1) + "-" +date.getFullYear()
     
     const data = {
         date_start1: formatDate(req.body.fecha_inicio_1),
@@ -190,33 +199,33 @@ router.post('/calendar/updateCalendar',(req, res) =>{
         //fecha_fin_ev_1 : req.body.fecha_fin_ev_1,
         //fecha_fin_ev_2 : req.body.fecha_fin_ev_2,
         course : req.body.course,
+        lastUpdate: lUpdate,
         grade: "Grado",
-        lastUpdate: req.body.lastUpdate
 
     }
-
+    console.log(data)
     const sql_query = "SELECT * FROM calendario WHERE curso = $1"
     connection.query(sql_query,[data.course],(err, result) => {
         if(err){
-            res.status(500)
+            res.status(500).send("Server error finding course")
         }else{
             if(result.rowCount === 0){              
-                const insertQuery = "INSERT into calendario (tipo,curso,fechainicio1,fechainicio2,fechainiciosept) VALUES ($1,$2,$3,$4,$5)"
-                connection.query(insertQuery,[data.grade,data.course,data.date_start1,data.date_start2,data.date_startSeptember], err =>{
+                const insertQuery = "INSERT into calendario (tipo,curso,fechainicio1,fechainicio2,fechainiciosept,fechaultmodificacion) VALUES ($1,$2,$3,$4,$5,$6)"
+                connection.query(insertQuery,[data.grade,data.course,data.date_start1,data.date_start2,data.date_startSeptember,data.lastUpdate], err =>{
                     if(err){
                         console.log(err.message)
-                        res.status(500).send("Server Error")
+                        res.status(500).send("Server Error on insert")
                     }else{
                         res.status(200).send("Creado nuevo curso")
 
                     }
                 })
             }else{
-                const updateQuery = "UPDATE calendario SET fechainicio1=$1, fechainicio2=$2,fechainiciosept=$3 WHERE curso = $4"
-                connection.query(updateQuery,[data.date_start1,data.date_start2,data.date_startSeptember, data.course], err =>{
+                const updateQuery = "UPDATE calendario SET fechainicio1=$1, fechainicio2=$2,fechainiciosept=$3, fechaultmodificacion=$4 WHERE curso = $5"
+                connection.query(updateQuery,[data.date_start1,data.date_start2,data.date_startSeptember,data.lastUpdate,data.course], err =>{
                     if(err){
                         console.log(err.message)
-                        res.status(500).send("Server Error")
+                        res.status(500).send("Server Error on update")
                     }else{
                         res.status(200).send("Actualizado curso")
 
