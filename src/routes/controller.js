@@ -171,7 +171,7 @@ router.post('/testing',(req, res) =>{
  function formatDate(date) {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
+        day = '' + d.getDay(),
         year = d.getFullYear();
 
     if (month.length < 2) 
