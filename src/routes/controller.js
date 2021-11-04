@@ -186,8 +186,7 @@ router.post('/calendar/updateCalendar',(req, res) =>{
     
     console.log(req.body)
     let date = new Date()
-    const lUpdate = date.getDay() + "-" + (date.getMonth() + 1) + "-" +date.getFullYear()
-    
+    const lUpdate = date.getDay() + "-" + (date.getMonth() + 1) + "-" +date.getFullYear()   
     const data = {
         date_start1: formatDate(req.body.fecha_inicio_1),
         date_start2: formatDate(req.body.fecha_inicio_2),
