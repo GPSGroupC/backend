@@ -162,6 +162,17 @@ router.post('/testing',(req, res) =>{
  * 
  */
 
+ router.delete('/calendar/deleteCalendar/:curso', async (req, res) => {
+
+    const curso = req.params.curso
+    const userId = await connection.query(`DELETE FROM calendario WHERE curso = $1`,[curso])
+    res.json({
+        status : "200",
+        rowCount : userId.rowCount.toString()
+    })
+    
+});
+
 
 /**
  * 

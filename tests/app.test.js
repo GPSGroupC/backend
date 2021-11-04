@@ -1,14 +1,16 @@
 const request = require('supertest');
 const app = require('../src/index');
 
-test('Este test no hace nada es para que pase la CI', () => {
-
-})
+describe('Testing Calendar rest API', () =>{
 
 
-
-describe('Testing rest API', () =>{
-
+    const data = {
+        tipo:"Grado",
+        course:"2049-2050",
+        fecha_inicio_1:"09-09-2049",
+        fecha_inicio_2:"09-02-2050",
+        convSeptiembre:"09-09-2050"
+    }
     
     it('GET /calendar/id RESTFUL ', (done) => {
         request(app)
@@ -39,24 +41,39 @@ describe('Testing rest API', () =>{
         
     })
 
-    it('GET /calendar/getCalendar devuelve los calendarios de un curso solicitado ', function(done) {
-        const data = {
-            tipo:"Grado",
-            course:"2049-2050",
-            fecha_inicio_1:"09-09-2049",
-            fecha_inicio_2:"09-02-2050",
-            convSeptiembre:"09-09-2050"
-        }
+    it('GET /calendar/getCalendar Crea un calendario y posteriormente comprueba que ese calendario ha sido correctamente creado ', function(done) {
+      
         request(app)
         .post('/calendar/updateCalendar')
         .send(data)
         .end(function(){
             request(app)
             .get('/calendar/getCalendar')
-            .query({course: "2049-2050"})
+            .query({course: data.course})
             .expect('Content-Type', 'application/json; charset=utf-8')
-            .expect(200, done);
+            .expect(200, ( _ , res) =>{
+                const expectedCourse = res.body[0].curso
+                const actualCourse = data.course               
+                expect(expectedCourse).toEqual(actualCourse) 
+                done();       
+            })
+        
             //Falta deletear el calendario creado para dejar la base de datos como estaba
         })
+        
     })
+
+    it('DELETE /calendar/deleteCalendar/:curso Elimina un calendario del curso que se le indique ', function(done) {
+      
+        request(app)
+        .delete('/calendar/deleteCalendar/' + data.course)
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect(200, (_ ,response) =>{
+            expect(response.body.rowCount).toEqual("1")
+            done();
+        })
+       
+        
+    })
+
 })
