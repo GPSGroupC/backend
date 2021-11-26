@@ -9,6 +9,6 @@ app.use(express.urlencoded({extended : true}));
 app.use(cors());
 
 //Routes
-app.use(require('./routes/controller'));
+app.use(require('./routes/controller.js'));
 
 module.exports = app;
