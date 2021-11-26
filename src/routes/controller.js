@@ -156,7 +156,7 @@ router.post('/calendar/updateCalendar',(req, res) =>{
         grade: "Grado",
 
     }
-    console.log(data)
+    console.log(data.lastUpdate)
     const sql_query = "SELECT * FROM calendario WHERE curso = $1"
     connection.query(sql_query,[data.course],(err, result) => {
         if(err){
@@ -213,45 +213,47 @@ router.post('/calendar/updateCalendar',(req, res) =>{
  * 
  */
 router.put('/calendar/updateSemester',(req, res) =>{
-
-    var data = [
-        '{"date":"29/7/2022","type":"lectivo","horarioCambiado":null,"semanaAB":"c"}',
-        '{"date":"30/7/2022","type":"lectivo","horarioCambiado":null,"semanaAB":"a"}',
-        '{"date":"8/8/2022","type":"lectivo","horarioCambiado":"X","semanaAB":"b"}',
-        '{"date":"2/8/2022","type":"convocatoria","horarioCambiado":null,"semanaAB":"c"}'
-      ]
-
-   /*
-   const diasSemestre = req.body.semester
-    //console.log(diasSemestre)
-    diasSemestre.forEach(fecha =>{
-        //Devuelve el String de JSONs como un objeto de jsones
-        jsonedDate = JSON.parse(fecha)
-        for (atributos in jsonedDate) {
-            console.log(jsonedDate[atributos])
-        }
-        
-    })*/
+  
     /**INSERT into semanas (semesterName,cursoCalendario,tipo,diaFecha,docencia,semanaAB,horarioCambiado) VALUES() */
-    //console.log(diasSemestre)
+    
+    const diasSemestre = req.body.semester
     const semesterName = req.body.semesterName
-    const InsertQuery = 'INSERT into semanas (semesterName,cursoCalendario,tipo,diaFecha,docencia,semanaAB,horarioCambiado) VALUES($1,$2,$3,$4,$5,$6,$7)'
-    const queriesToBeSent = [ ]
-    data.forEach(fecha =>{
-        //Devuelve el String de JSONs como un objeto de jsones
-        jsonedDate = JSON.parse(fecha)
-        const queryObject = {query: InsertQuery, values: [semesterName,"2021-2022","Grado",
-        jsonedDate.date,jsonedDate.type,jsonedDate.semanaAB,jsonedDate.horarioCambiado]}
-        queriesToBeSent.push(queryObject)
-        
+    const curso = req.body.course
+    const InsertQuery = 'INSERT into semanas(semestername,cursocalendario,tipo,diafecha,docencia,semana_a_b,horariocambiado) VALUES($1,$2,$3,$4,$5,$6,$7)'
+    const queriesToBeSent = []
+    
+    var promise = new Promise(function(resolve, reject) {
+        diasSemestre.forEach( (fecha) =>{
+            try{
+                //Devuelve el String de JSONs como un objeto de jsones
+                jsonedDate = JSON.parse(fecha)
+                const queryObject = {query: InsertQuery, values: [semesterName,curso,"Grado",
+                jsonedDate.date,jsonedDate.type,jsonedDate.semanaAB,jsonedDate.horarioCambiado]}
+                queriesToBeSent.push(queryObject)
+            } catch(sysntaxError){
+                reject(sysntaxError)
+            }
+            
+        });
+        resolve()
     })
-    const SQL = pgp.helpers.concat(queriesToBeSent);
-    pgPromiseDB.multi(SQL).then((t) =>{
-        console.log(t)
-    }).catch(err => {
+    
+    promise.then( () => {
+        const SQL = pgp.helpers.concat(queriesToBeSent);
+        pgPromiseDB.multi(SQL).then((t) =>{
+            res.sendStatus(200)
+        }).catch(err => {
+            console.log(err)
+            res.status(500).send(err)
+        })
+
+    }).catch( err => {
         console.log(err)
-    })
-    res.sendStatus(200)
+        res.status(500).send("Syntax Error on Parsing")
+    })         
+    
+   
+    
 })
 
 
