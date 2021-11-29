@@ -135,7 +135,7 @@ router.put('/calendar/updateSemester',(req, res) =>{
     const InsertQuery = 'INSERT into semanas(semestername,cursocalendario,tipo,diafecha,docencia,semana_a_b,horariocambiado) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (diafecha) ' +
     'DO UPDATE SET docencia=$5,semana_a_b=$6,horariocambiado=$7'
     const queriesToBeSent = []
-    
+        
     var promise = new Promise(function(resolve, reject) {
         diasSemestre.forEach( (fecha) =>{
             try{
@@ -155,6 +155,8 @@ router.put('/calendar/updateSemester',(req, res) =>{
     promise.then( () => {
         const SQL = pgp.helpers.concat(queriesToBeSent);
         //Enviamos toda la Query de Golpe garantizando consistencia
+        //Descomentar para ver las queries que se mandan
+        //console.log(SQL)
         pgPromiseDB.multi(SQL).then((t) =>{
             res.sendStatus(200)
         }).catch(err => {
@@ -165,7 +167,7 @@ router.put('/calendar/updateSemester',(req, res) =>{
     }).catch( err => {
         console.log(err)
         res.status(500).send("Syntax Error on Parsing")
-    })         
+    })        
     
    
     
