@@ -37,94 +37,6 @@ router.get('/calendar/grades/:course', (req, res) =>{
 
 })
 
-const jsonPruebas = {
-    "Septiembre": {
-        "semana": [
-        {
-            "n_semana": "1",
-            "inicio": "13/9/2021",
-            "fin": "19/9/21",
-            "Lunes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Martes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Miercoles" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Jueves" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Viernes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            }
-        
-        },
-        {
-            "n_semana": "2",
-            "inicio": "20/9/2021",
-            "fin": "26/9/21",
-            "Lunes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "B",     
-            },
-            "Martes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Miercoles" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Jueves" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Viernes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            }
-        }
-
-        ]
-    }
-}
-
-Date.prototype.addDays = function(days) {
-    var date = new Date(this.valueOf());
-    date.setDate(date.getDate() + days);
-    return date;
-}
-
-function montar_fechas (date) {
-    return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
-}
-
-router.post('/testing',(req, res) =>{
-    
-    for(var attributename in jsonPruebas){
-        //console.log(attributename.hasOwnProperty("semana"))
-        //console.log(attributename+": "+jsonPruebas[attributename]);
-        //console.log(jsonPruebas[attributename].semana)
-        var comodin = jsonPruebas[attributename].semana
-        for (let index = 0; index < comodin.length; index++) {
-            console.log("La semana del " + comodin[index].n_semana + " tiene: \n");
-            var fecha_troceada = comodin[index].inicio.split('/')
-            date = new Date(fecha_troceada[2],fecha_troceada[1] - 1, fecha_troceada[0])
-            console.log("El lunes " + montar_fechas(date) + "de tipo: " + comodin[index].Lunes.tipo_dia +  "\n")
-            date = date.addDays(1)
-            console.log("El martes " + montar_fechas(date) + "de tipo: " + comodin[index].Martes.tipo_dia +  "\n")
-        }
-        
-    }
-    res.send(jsonPruebas)
-})
 
  router.delete('/calendar/deleteCalendar/:curso', async (req, res) => {
 
@@ -169,7 +81,7 @@ router.post('/calendar/updateCalendar',(req, res) =>{
                         console.log(err.message)
                         res.status(500).send("Server Error on insert")
                     }else{
-                        res.status(200).send("Creado nuevo curso")
+                        res.status(201).send("Creado nuevo curso")
 
                     }
                 })
@@ -198,6 +110,7 @@ router.post('/calendar/updateCalendar',(req, res) =>{
  * Request:
  * Recibe un JSON tal que así:
  *  {
+ *      course: curso actual Ej: ("2021-2022")
  *      semesterName: (semestre1 | semestre2 | recuperacion) uno de estos posibles valores
  *      //Este 2º campo recibe un array con todos los dias de ese periodo (semesterName)
  *      semester: [
@@ -219,7 +132,8 @@ router.put('/calendar/updateSemester',(req, res) =>{
     const diasSemestre = req.body.semester
     const semesterName = req.body.semesterName
     const curso = req.body.course
-    const InsertQuery = 'INSERT into semanas(semestername,cursocalendario,tipo,diafecha,docencia,semana_a_b,horariocambiado) VALUES($1,$2,$3,$4,$5,$6,$7)'
+    const InsertQuery = 'INSERT into semanas(semestername,cursocalendario,tipo,diafecha,docencia,semana_a_b,horariocambiado) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (diafecha) ' +
+    'DO UPDATE SET docencia=$5,semana_a_b=$6,horariocambiado=$7'
     const queriesToBeSent = []
     
     var promise = new Promise(function(resolve, reject) {
@@ -240,6 +154,7 @@ router.put('/calendar/updateSemester',(req, res) =>{
     
     promise.then( () => {
         const SQL = pgp.helpers.concat(queriesToBeSent);
+        //Enviamos toda la Query de Golpe garantizando consistencia
         pgPromiseDB.multi(SQL).then((t) =>{
             res.sendStatus(200)
         }).catch(err => {
@@ -266,7 +181,7 @@ router.get('/calendar/getCalendar',(req, res) =>{
             res.status(500).send("Server Error")
         }else{
             if(response.rowCount === 0){
-                res.status(225).send("No course found")
+                res.status(204).send("No course found")
             }else{
                 res.status(200).send(response.rows)
             }
