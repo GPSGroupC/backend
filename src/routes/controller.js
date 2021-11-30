@@ -159,7 +159,7 @@ router.put('/calendar/updateSemester',(req, res) =>{
         //console.log(SQL)
         pgPromiseDB.multi(SQL).then((t) =>{
             res.sendStatus(200)
-        }).catch(err => {
+        }).catch( err => {
             console.log(err)
             res.status(500).send(err)
         })
@@ -188,6 +188,22 @@ router.get('/calendar/getCalendar',(req, res) =>{
                 res.status(200).send(response.rows)
             }
         }
+    })
+})
+
+router.get('/calendar/getDaysCalendar', async (req,res) =>{
+
+    const SELECT_QUERY = "SELECT diafecha,semestername,semana_a_b,docencia,horariocambiado FROM semanas WHERE cursocalendario=$1 AND semestername=$2";
+    //Curso y semestre del que queremos obtener la informacion de los dias.
+    const cursoPedido = req.query.cursoCalendario
+    const semestrePedido = req.query.semesterName
+
+    const response = await connection.query(SELECT_QUERY,[cursoPedido,semestrePedido])
+
+    res.json({
+        //Array con todos los días de ese semestre
+        message: response.rows,
+        status: "200"
     })
 })
 
