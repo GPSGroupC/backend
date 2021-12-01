@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const connection = require('../db/conexion')
+const Parser = require('../utils/parser');
+const {connection, pgPromiseDB, pgp} = require('../db/conexion')
+
 
 const calendar = [
     "2022" , "2023"
@@ -35,132 +37,6 @@ router.get('/calendar/grades/:course', (req, res) =>{
 
 })
 
-const jsonPruebas = {
-    "Septiembre": {
-        "semana": [
-        {
-            "n_semana": "1",
-            "inicio": "13/9/2021",
-            "fin": "19/9/21",
-            "Lunes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Martes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Miercoles" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Jueves" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Viernes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            }
-        
-        },
-        {
-            "n_semana": "2",
-            "inicio": "20/9/2021",
-            "fin": "26/9/21",
-            "Lunes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "B",     
-            },
-            "Martes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Miercoles" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Jueves" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            },
-            "Viernes" : {
-                "fecha_especial": "0",
-                "tipo_dia" : "A",     
-            }
-        }
-
-        ]
-    }
-}
-
-Date.prototype.addDays = function(days) {
-    var date = new Date(this.valueOf());
-    date.setDate(date.getDate() + days);
-    return date;
-}
-
-function montar_fechas (date) {
-    return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
-}
-
-router.post('/testing',(req, res) =>{
-    for(var attributename in jsonPruebas){
-        //console.log(attributename.hasOwnProperty("semana"))
-        //console.log(attributename+": "+jsonPruebas[attributename]);
-        //console.log(jsonPruebas[attributename].semana)
-        var comodin = jsonPruebas[attributename].semana
-        for (let index = 0; index < comodin.length; index++) {
-            console.log("La semana del " + comodin[index].n_semana + " tiene: \n");
-            var fecha_troceada = comodin[index].inicio.split('/')
-            date = new Date(fecha_troceada[2],fecha_troceada[1] - 1, fecha_troceada[0])
-            console.log("El lunes " + montar_fechas(date) + "de tipo: " + comodin[index].Lunes.tipo_dia +  "\n")
-            date = date.addDays(1)
-            console.log("El martes " + montar_fechas(date) + "de tipo: " + comodin[index].Martes.tipo_dia +  "\n")
-        }
-        
-    }
-    res.send(jsonPruebas)
-})
-
-/**
- * Interfaz para hacer el update del calendario.
- * Posible JSON recibido:
- * {
- *  "Septiembre (mes)" : {
- *      "semana": [
- *          "n_semana" : 1,
- *          "inicio" : 13/9/21,
- *          "fin": 19/9/21,
- *          "Lunes" : {
- *              "fecha_especial" : 1 o 0
- *              "tipo_dia" : A , B, C, D, F
- *              //Solo si fecha especial = 1
- *              "Dia_Correspondiente" : "LUNES,MARTES,MIERCOLES,JUEVES,VIERNES"
- *              "Festividad" : "Día de la Constitución Española"
- *          },
- *          "Martes" : {
- *              "fecha_especial" : 1 o 0
- *              "tipo_dia" : A , B, C, D, F
- *              //Solo si fecha especial = 1
- *              "Dia_Correspondiente" : "LUNES,MARTES,MIERCOLES,JUEVES,VIERNES"
- *              "Festividad" : "Día de la Constitución Española"
- *          },
- *              
- *      ],
- *      [
- *          "n_semana" : 2,
- *          "inicio" : 13/9/21,
- *          "fin": 19/9/21,
- *          "Lunes" : {
- *           ...
- *          }         
- *      ] 
- *  }
- * }
- * 
- * 
- */
 
  router.delete('/calendar/deleteCalendar/:curso', async (req, res) => {
 
@@ -173,35 +49,14 @@ router.post('/testing',(req, res) =>{
     
 });
 
-
-/**
- * 
- * @param {Receive a date type in any format} date 
- * @returns the date parsed on format DD-MM-YYYY.
- */
- function formatDate(date) {
-    var d = new Date(date),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
-
-    if (month.length < 2) 
-        month = '0' + month;
-    if (day.length < 2) 
-        day = '0' + day;
-
-    return [day, month, year].join('-');
-}
-
 router.post('/calendar/updateCalendar',(req, res) =>{
     
-    console.log(req.body)
     let date = new Date()
     const lUpdate = date.getDay() + "-" + (date.getMonth() + 1) + "-" +date.getFullYear()   
     const data = {
-        date_start1: formatDate(req.body.fecha_inicio_1),
-        date_start2: formatDate(req.body.fecha_inicio_2),
-        date_startSeptember: formatDate(req.body.convSeptiembre),
+        date_start1: Parser.formatDate(req.body.fecha_inicio_1),
+        date_start2: Parser.formatDate(req.body.fecha_inicio_2),
+        date_startSeptember: Parser.formatDate(req.body.convSeptiembre),
         //fecha_fin_1 : req.body.fecha_fin_1,
         //fecha_fin_2 : req.body.fecha_fin_2,
        // fecha_inicio_ev1 : req.body.fecha_inicio_ev_1,
@@ -213,7 +68,7 @@ router.post('/calendar/updateCalendar',(req, res) =>{
         grade: "Grado",
 
     }
-    console.log(data)
+    console.log(data.lastUpdate)
     const sql_query = "SELECT * FROM calendario WHERE curso = $1"
     connection.query(sql_query,[data.course],(err, result) => {
         if(err){
@@ -226,7 +81,7 @@ router.post('/calendar/updateCalendar',(req, res) =>{
                         console.log(err.message)
                         res.status(500).send("Server Error on insert")
                     }else{
-                        res.status(200).send("Creado nuevo curso")
+                        res.status(201).send("Creado nuevo curso")
 
                     }
                 })
@@ -250,6 +105,74 @@ router.post('/calendar/updateCalendar',(req, res) =>{
 
 
 })
+/**
+ * Documentación del ENDPOINT
+ * Request:
+ * Recibe un JSON tal que así:
+ *  {
+ *      course: curso actual Ej: ("2021-2022")
+ *      semesterName: (semestre1 | semestre2 | recuperacion) uno de estos posibles valores
+ *      //Este 2º campo recibe un array con todos los dias de ese periodo (semesterName)
+ *      semester: [
+ *          {
+ *             date: fecha del día concreto del calendario formato DD-MM-YYYY
+ *             type: lectivo | convocatoria | festivo
+ *             horariocambiado: null | ( L,M,X,J,V) segun el día cambiado, null -> indica que no es un día cambiado
+ *             semanaAB: a | b | c, donde: a -> Semana A, b -> Semana B, c-> día sin prácticas
+ *          }
+ *      ]
+ * 
+ *  }
+ * 
+ */
+router.put('/calendar/updateSemester',(req, res) =>{
+  
+    /**INSERT into semanas (semesterName,cursoCalendario,tipo,diaFecha,docencia,semanaAB,horarioCambiado) VALUES() */
+    
+    const diasSemestre = req.body.semester
+    const semesterName = req.body.semesterName
+    const curso = req.body.course
+    const InsertQuery = 'INSERT into semanas(semestername,cursocalendario,tipo,diafecha,docencia,semana_a_b,horariocambiado) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (diafecha) ' +
+    'DO UPDATE SET docencia=$5,semana_a_b=$6,horariocambiado=$7'
+    const queriesToBeSent = []
+        
+    var promise = new Promise(function(resolve, reject) {
+        diasSemestre.forEach( (fecha) =>{
+            try{
+                //Devuelve el String de JSONs como un objeto de jsones
+                jsonedDate = JSON.parse(fecha)
+                const queryObject = {query: InsertQuery, values: [semesterName,curso,"Grado",
+                jsonedDate.date,jsonedDate.type,jsonedDate.semanaAB,jsonedDate.horarioCambiado]}
+                queriesToBeSent.push(queryObject)
+            } catch(sysntaxError){
+                reject(sysntaxError)
+            }
+            
+        });
+        resolve()
+    })
+    
+    promise.then( () => {
+        const SQL = pgp.helpers.concat(queriesToBeSent);
+        //Enviamos toda la Query de Golpe garantizando consistencia
+        //Descomentar para ver las queries que se mandan
+        //console.log(SQL)
+        pgPromiseDB.multi(SQL).then((t) =>{
+            res.sendStatus(200)
+        }).catch( err => {
+            console.log(err)
+            res.status(500).send(err)
+        })
+
+    }).catch( err => {
+        console.log(err)
+        res.status(500).send("Syntax Error on Parsing")
+    })        
+    
+   
+    
+})
+
 
 router.get('/calendar/getCalendar',(req, res) =>{
     
@@ -260,11 +183,27 @@ router.get('/calendar/getCalendar',(req, res) =>{
             res.status(500).send("Server Error")
         }else{
             if(response.rowCount === 0){
-                res.status(225).send("No course found")
+                res.status(204).send("No course found")
             }else{
                 res.status(200).send(response.rows)
             }
         }
+    })
+})
+
+router.get('/calendar/getDaysCalendar', async (req,res) =>{
+
+    const SELECT_QUERY = "SELECT diafecha,semestername,semana_a_b,docencia,horariocambiado FROM semanas WHERE cursocalendario=$1 AND semestername=$2";
+    //Curso y semestre del que queremos obtener la informacion de los dias.
+    const cursoPedido = req.query.cursoCalendario
+    const semestrePedido = req.query.semesterName
+
+    const response = await connection.query(SELECT_QUERY,[cursoPedido,semestrePedido])
+
+    res.json({
+        //Array con todos los días de ese semestre
+        message: response.rows,
+        status: "200"
     })
 })
 

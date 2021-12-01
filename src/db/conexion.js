@@ -6,8 +6,20 @@
  */
 const Sequelize = require('sequelize');
 const { Client } = require('pg');
+const pgp = require('pg-promise')({
+    // Initialization Options
+    capSQL: true,
+});
 
 process.env.DATABASE_URL = "postgres://itmsioxcrlmkte:8a08f8d8c98c1c9adde8a852914e23de5572d0e9585d165b20d37204652cbfcb@ec2-79-125-30-28.eu-west-1.compute.amazonaws.com:5432/d6c2qp25ec15kk"
+
+
+const connectionConfig = {
+    connectionString: process.env.DATABASE_URL,
+        ssl: {
+          rejectUnauthorized: false
+        }
+}
 
  //Conexion with production db
    
@@ -19,6 +31,7 @@ const connection = new Client({
 });
 
 
+
 connection.connect (function (err) {
     if(err){
         console.log('Error when connecting to db:', err);
@@ -27,6 +40,9 @@ connection.connect (function (err) {
     }
     
 })
+
+// Creating a new database instance from the connection details:
+var pgPromiseDB = pgp(connectionConfig)
 
  //Conexion with local db
  //Diego si lees esto lo he comentado porque me dijiste de usar la de produccion cuando haya más tiempo lo miramos
@@ -45,4 +61,4 @@ sequelize
         console.error('Unable to connect to the database:', err);
     });
 */
-module.exports = connection;
+module.exports= {connection: connection, pgPromiseDB: pgPromiseDB, pgp: pgp};
