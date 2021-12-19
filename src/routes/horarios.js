@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const connection = require('../db/conexion')
+const {connection, pgPromiseDB, pgp} = require('../db/conexion')
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
