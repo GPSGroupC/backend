@@ -94,8 +94,8 @@ router.post('/importarAsignaturas', fileUpload, (req,res) => {
     });
 
     // Eliminamos los ficheros para que no ocupen espacio en el server
-    eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'));
-    eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.xlsx'));
+    //eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'));
+    //eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.xlsx'));
 
     res.status(200).send("Asignaturas importadas")
 })
@@ -148,8 +148,8 @@ router.post('/anyadirAsignaturas', fileUpload, (req,res) => {
     });
 
     // Eliminamos los ficheros para que no ocupen espacio en el server
-    eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'));
-    eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.xlsx'));
+    //eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'));
+    //eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.xlsx'));
 
     res.status(200).send("Asignaturas añadidas")
 })
