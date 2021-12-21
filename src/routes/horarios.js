@@ -32,8 +32,8 @@ function eliminarFichero (path) {
 // Importar un CSV con asignaturas (se importarán automáticamente todos los planes relativos a dichas a asignaturas)
 router.post('/importarAsignaturas', fileUpload, (req,res) => {
 
-    const insertQueryAsignaturas = "INSERT into asignaturas (codasig,nombre,codplan,curso,periodo,vinculo,destvinculo,numgrupos,alumprev,horasestteoria,horasprofteoria," +
-    "horasestproblemas,horasprofproblemas,horasestpracticas,horasprofpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)"
+    const insertQueryAsignaturas = "INSERT into asignaturas (codasig,nombre,codarea,codplan,curso,periodo,vinculo,destvinculo,numgrupos,alumprev,horasestteoria,horasprofteoria," +
+    "horasestproblemas,horasprofproblemas,horasestpracticas,horasprofpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)"
     const insertQueryPlanes = "INSERT into planes (codplan,nombre,numcursos,numperiodos,numgrupos) VALUES ($1,$2,$3,$4,$5)"
     const selectQueryPlanes = "SELECT * from planes WHERE codplan = $1"
 
@@ -64,13 +64,13 @@ router.post('/importarAsignaturas', fileUpload, (req,res) => {
     lineReader.eachLine(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'), function(line) {
         if(i > 2) {
             var fieldsArray = line.split(';')
-            //console.log(fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[11] + ',' + fieldsArray[12] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
+            //console.log(fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[6] + ',' + fieldsArray[11] + ',' + fieldsArray[12] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
             //+ ',' + fieldsArray[23] + ',' + fieldsArray[24] + ',' + fieldsArray[30] + ',' + fieldsArray[31] + ',' + fieldsArray[32] + ',' + fieldsArray[33] + ',' + fieldsArray[34] + ',' + fieldsArray[35])
-            connection.query(insertQueryAsignaturas,[fieldsArray[3],fieldsArray[4],fieldsArray[11],fieldsArray[17],fieldsArray[18],fieldsArray[21],fieldsArray[22],fieldsArray[23],
+            connection.query(insertQueryAsignaturas,[fieldsArray[3],fieldsArray[4],fieldsArray[6],fieldsArray[11],fieldsArray[17],fieldsArray[18],fieldsArray[21],fieldsArray[22],fieldsArray[23],
                 fieldsArray[24],fieldsArray[30],fieldsArray[31],fieldsArray[32],fieldsArray[33],fieldsArray[34],fieldsArray[35],true], err =>{
                 if(err){
                     console.log(err.message)
-                    console.log("Error al insertar asignatura: " + fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[11] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
+                    console.log("Error al insertar asignatura: " + fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[6] + ',' + fieldsArray[11] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
                     + ',' + fieldsArray[23] + ',' + fieldsArray[24] + ',' + fieldsArray[30] + ',' + fieldsArray[31] + ',' + fieldsArray[32] + ',' + fieldsArray[33] + ',' + fieldsArray[34] + ',' + fieldsArray[35])
                 }
             });
@@ -104,8 +104,8 @@ router.post('/importarAsignaturas', fileUpload, (req,res) => {
 // Añadir un CSV con asignaturas (en este caso, no se eliminan las asignaturas que se habían importado/añadido anteriormente)
 router.post('/anyadirAsignaturas', fileUpload, (req,res) => {
 
-    const insertQueryAsignaturas = "INSERT into asignaturas (codasig,nombre,codplan,curso,periodo,vinculo,destvinculo,numgrupos,alumprev,horasestteoria,horasprofteoria," +
-    "horasestproblemas,horasprofproblemas,horasestpracticas,horasprofpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)"
+    const insertQueryAsignaturas = "INSERT into asignaturas (codasig,nombre,codarea,codplan,curso,periodo,vinculo,destvinculo,numgrupos,alumprev,horasestteoria,horasprofteoria," +
+    "horasestproblemas,horasprofproblemas,horasestpracticas,horasprofpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)"
     const insertQueryPlanes = "INSERT into planes (codplan,nombre,numcursos,numperiodos,numgrupos) VALUES ($1,$2,$3,$4,$5)"
     const selectQueryPlanes = "SELECT * from planes WHERE codplan = $1"
 
@@ -118,13 +118,13 @@ router.post('/anyadirAsignaturas', fileUpload, (req,res) => {
     lineReader.eachLine(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'), function(line) {
         if(i > 2) {
             var fieldsArray = line.split(';')
-            //console.log(fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[11] + ',' + fieldsArray[12] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
+            //console.log(fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[6] + ',' + fieldsArray[11] + ',' + fieldsArray[12] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
             //+ ',' + fieldsArray[23] + ',' + fieldsArray[24] + ',' + fieldsArray[30] + ',' + fieldsArray[31] + ',' + fieldsArray[32] + ',' + fieldsArray[33] + ',' + fieldsArray[34] + ',' + fieldsArray[35])
-            connection.query(insertQueryAsignaturas,[fieldsArray[3],fieldsArray[4],fieldsArray[11],fieldsArray[17],fieldsArray[18],fieldsArray[21],fieldsArray[22],fieldsArray[23],
+            connection.query(insertQueryAsignaturas,[fieldsArray[3],fieldsArray[4],fieldsArray[6],fieldsArray[11],fieldsArray[17],fieldsArray[18],fieldsArray[21],fieldsArray[22],fieldsArray[23],
                 fieldsArray[24],fieldsArray[30],fieldsArray[31],fieldsArray[32],fieldsArray[33],fieldsArray[34],fieldsArray[35],false], err =>{
                 if(err){
                     console.log(err.message)
-                    console.log("Error al insertar asignatura: " + fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[11] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
+                    console.log("Error al insertar asignatura: " + fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[6] + ',' + fieldsArray[11] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
                     + ',' + fieldsArray[23] + ',' + fieldsArray[24] + ',' + fieldsArray[30] + ',' + fieldsArray[31] + ',' + fieldsArray[32] + ',' + fieldsArray[33] + ',' + fieldsArray[34] + ',' + fieldsArray[35])
                 }
             });
@@ -188,6 +188,19 @@ router.post('/importarAulas', fileUpload, (req,res) => {
 
     res.status(200).send("Aulas importadas")
 })
+
+// Eliminar una asignatura
+router.delete('/eliminarAsignatura', (req, res) => {
+    const asignaturaObj = {
+        id: req.body.id
+    }
+    const sql = `DELETE FROM asignaturas WHERE id=${asignaturaObj.id}`;
+
+    connection.query(sql, error => {
+        if (error) throw error;
+        res.send('Asignatura eliminada');
+    });
+});
 
 // Obtener todas las asignaturas almacenadas en la base de datos
 router.get('/obtenerAsignaturas', (req, res) => {
