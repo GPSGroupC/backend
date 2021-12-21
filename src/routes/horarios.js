@@ -189,6 +189,30 @@ router.post('/importarAulas', fileUpload, (req,res) => {
     res.status(200).send("Aulas importadas")
 })
 
+// Añadir una asignatura
+router.post('/anyadirAsignatura', (req, res) => {
+    const asignaturaObj = {
+        codasig: req.body.codasig,
+        nombre: req.body.nombre,
+        codarea: req.body.codarea,
+        codplan: req.body.codplan,
+        curso: req.body.curso,
+        periodo: req.body.periodo,
+        horasestteoria: req.body.horasestteoria,
+        horasestproblemas: req.body.horasestproblemas,
+        horasestpracticas: req.body.horasestpracticas
+    }
+    const insertQueryAsignatura = "INSERT into asignaturas (codasig,nombre,codarea,codplan,curso,periodo,horasestteoria,horasestproblemas,horasestpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)"
+    connection.query(insertQueryAsignatura,[asignaturaObj.codasig,asignaturaObj.nombre,asignaturaObj.codarea,asignaturaObj.codplan,asignaturaObj.curso,asignaturaObj.periodo,asignaturaObj.horasestteoria,asignaturaObj.horasestproblemas,asignaturaObj.horasestpracticas,false], err => {
+        if(err) {
+            console.log(err.message)
+            console.log("Error al añadir asignatura: " + asignaturaObj.codasig + ',' + asignaturaObj.nombre + ',' + asignaturaObj.codarea + ',' + asignaturaObj.codplan + ',' + asignaturaObj.curso + ',' + asignaturaObj.periodo + ',' + asignaturaObj.horasestteoria + ',' + asignaturaObj.horasestproblemas + ',' + asignaturaObj.horasestpracticas)
+        } else {
+            res.status(200).send("Asignatura añadida")
+        }
+    });
+})
+
 // Eliminar una asignatura
 router.delete('/eliminarAsignatura', (req, res) => {
     const asignaturaObj = {
@@ -199,6 +223,28 @@ router.delete('/eliminarAsignatura', (req, res) => {
     connection.query(sql, error => {
         if (error) throw error;
         res.send('Asignatura eliminada');
+    });
+});
+
+// Editar una asignatura
+router.put('/editarAsignatura/:id', (req, res) => {
+    const {id} = req.params;
+    const asignaturaObj = {
+        codasig: req.body.codasig,
+        nombre: req.body.nombre,
+        codarea: req.body.codarea,
+        codplan: req.body.codplan,
+        curso: req.body.curso,
+        periodo: req.body.periodo,
+        horasestteoria: req.body.horasestteoria,
+        horasestproblemas: req.body.horasestproblemas,
+        horasestpracticas: req.body.horasestpracticas
+    }
+    const updateQueryAsignatura =`UPDATE asignaturas SET codasig='${asignaturaObj.codasig}', nombre='${asignaturaObj.nombre}', codarea='${asignaturaObj.codarea}', codplan='${asignaturaObj.codplan}', curso='${asignaturaObj.curso}',
+    periodo='${asignaturaObj.periodo}', horasestteoria='${asignaturaObj.horasestteoria}', horasestproblemas='${asignaturaObj.horasestproblemas}', horasestpracticas='${asignaturaObj.horasestpracticas}' WHERE id=${id}`;
+    connection.query(updateQueryAsignatura, error => {
+        if (error) throw error;
+        res.send('Asignatura actualizada');
     });
 });
 
