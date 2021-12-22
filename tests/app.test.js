@@ -1,12 +1,12 @@
 const request = require('supertest');
 const app = require('../src/index');
 
-describe('Testing Calendar rest API', () =>{
+describe('Testing Calendar API', () =>{
 
 
     const data = {
         tipo:"Grado",
-        course:"2049-2050",
+        course:"1949-1950",
         fecha_inicio_1:"09-09-2049",
         fecha_inicio_2:"09-02-2050",
         convSeptiembre:"09-09-2050"
@@ -58,9 +58,20 @@ describe('Testing Calendar rest API', () =>{
                 done();       
             })
         
-            //Falta deletear el calendario creado para dejar la base de datos como estaba
         })
+       
         
+    })
+
+    it('GET /calendar/getCalendar Test para comprobar el endpoint getCalendar cuando se pide un calendario no existente', () =>{
+        request(app)
+        .get('/calendar/getCalendar')
+        .query({course: "1930-1931"})
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect(200, (_ ,response) =>{
+            //Esperamos que el tipo de respuesta sea del tipo 204 , calendar not found
+            expect(response.status).toEqual(204)
+        })
     })
 
     it('DELETE /calendar/deleteCalendar/:curso Elimina un calendario del curso que se le indique ', function(done) {
