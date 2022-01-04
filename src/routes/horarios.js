@@ -157,10 +157,24 @@ router.post('/anyadirAsignaturas', fileUpload, (req,res) => {
 
 // Importar un CSV con las aulas
 router.post('/importarAulas', fileUpload, (req,res) => {
-    const insertQueryAulas = "INSERT into aulas (id,acronimo,nombre,capacidad,edificio) VALUES ($1,$2,$3,$4,$5)"
+    const insertQueryAulas = "INSERT into aulas (acronimo,nombre,capacidad,edificio,esimportada) VALUES ($1,$2,$3,$4,$5)"
 
-    // Vacíamos la tabla
-    connection.query("TRUNCATE TABLE aulas");
+    const {
+        body: { conservarNoImportadas }
+    } = req;
+
+    // Vacíamos las tablas teniendo en cuenta si el usuario quiere conservar las aulas no importadas o no
+    console.log(conservarNoImportadas)
+    if (conservarNoImportadas === 'true') {
+        console.log("Conservamos las aulas no importadas")
+        connection.query("DELETE from aulas WHERE esimportada = true",(err) => {
+            if(err) {
+                console.log(err.message)
+            }
+        });
+    } else {
+        connection.query("TRUNCATE TABLE aulas RESTART IDENTITY");
+    }
 
     // Transformamos el fichero .xlsx en .csv
     const excel = XLSX.readFile(path.join(__dirname, '../files/' + req.file.filename));
@@ -172,7 +186,38 @@ router.post('/importarAulas', fileUpload, (req,res) => {
         if(i > 0) {
             line = line.replace(/\"/g,"")
             var fieldsArray = line.split(';')
-            connection.query(insertQueryAulas,[fieldsArray[0],fieldsArray[1],fieldsArray[2],fieldsArray[3],fieldsArray[4]], err =>{
+            connection.query(insertQueryAulas,[fieldsArray[1],fieldsArray[2],fieldsArray[3],fieldsArray[4],true], err =>{
+                if(err){
+                    console.log(err.message)
+                    console.log("Error al insertar aula: " + fieldsArray[0] + ',' + fieldsArray[1] + ',' + fieldsArray[2] + ',' + fieldsArray[3] + ',' + fieldsArray[4])
+                }
+            });
+        }
+        i++
+    });
+
+    // Eliminamos los ficheros para que no ocupen espacio en el server
+    //eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'));
+    //eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.xlsx'));
+
+    res.status(200).send("Aulas importadas")
+})
+
+// Añadir un CSV con aulas (en este caso, no se eliminan las aulas que se habían importado/añadido anteriormente)
+router.post('/anyadirAulas', fileUpload, (req,res) => {
+    const insertQueryAulas = "INSERT into aulas (acronimo,nombre,capacidad,edificio,esimportada) VALUES ($1,$2,$3,$4,$5)"
+
+    // Transformamos el fichero .xlsx en .csv
+    const excel = XLSX.readFile(path.join(__dirname, '../files/' + req.file.filename));
+    XLSX.writeFile(excel, path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'), { bookType: "csv", FS: ';'});
+
+    // Leemos el fichero línea por línea
+    var i = 0
+    lineReader.eachLine(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'), function(line) {
+        if(i > 0) {
+            line = line.replace(/\"/g,"")
+            var fieldsArray = line.split(';')
+            connection.query(insertQueryAulas,[fieldsArray[1],fieldsArray[2],fieldsArray[3],fieldsArray[4],false], err =>{
                 if(err){
                     console.log(err.message)
                     console.log("Error al insertar aula: " + fieldsArray[0] + ',' + fieldsArray[1] + ',' + fieldsArray[2] + ',' + fieldsArray[3] + ',' + fieldsArray[4])
@@ -254,7 +299,7 @@ router.put('/editarAsignatura/:id', (req, res) => {
 
 // Obtener todas las asignaturas almacenadas en la base de datos
 router.get('/obtenerAsignaturas', (req, res) => {
-    connection.query("SELECT * FROM asignaturas",(err, result) => {
+    connection.query("SELECT * FROM asignaturas ORDER BY id",(err, result) => {
         if (err) throw err;
         if (result.rowCount > 0) {
             console.log("Obtenidas " + result.rowCount + " asignaturas");
@@ -269,7 +314,7 @@ router.get('/obtenerAsignaturas', (req, res) => {
 
 // Obtener todas las asignaturas de un plan, curso y periodo concretos (se usaría para obtener las asignaturas que se pueden agregar al crear un horario específico)
 router.get('/obtenerAsignaturasHorario', (req, res) => {
-    const selectQueryAsignaturas = "SELECT * FROM asignaturas WHERE codplan = $1 AND curso = $2 AND periodo = $3"
+    const selectQueryAsignaturas = "SELECT * FROM asignaturas WHERE codplan = $1 AND curso = $2 AND periodo = $3 ORDER BY id"
 
     const asignaturaObj = {
         codplan: req.body.codplan,
@@ -302,6 +347,70 @@ router.get('/obtenerPlanes', (req, res) => {
                 message: 'No hay planes almacenados'
             })
         }
+    });
+});
+
+// Obtener todas las aulas almacenadas en la base de datos
+router.get('/obtenerAulas', (req, res) => {
+    connection.query("SELECT * FROM aulas ORDER BY id",(err, result) => {
+        if (err) throw err;
+        if (result.rowCount > 0) {
+            console.log("Obtenidas " + result.rowCount + " aulas");
+            res.json(result.rows);
+        }else {
+            res.json({
+                message: 'No hay aulas almacenadas'
+            })
+        }
+    });
+});
+
+// Añadir un aula
+router.post('/anyadirAula', (req, res) => {
+    const aulaObj = {
+        acronimo: req.body.acronimo,
+        nombre: req.body.nombre,
+        capacidad: req.body.capacidad,
+        edificio: req.body.edificio
+    }
+    console.log(aulaObj);
+    const insertQueryAula = "INSERT into aulas (acronimo,nombre,capacidad,edificio,esimportada) VALUES ($1,$2,$3,$4,$5)"
+    connection.query(insertQueryAula,[aulaObj.acronimo,aulaObj.nombre,aulaObj.capacidad,aulaObj.edificio,false], err => {
+        if(err) {
+            console.log(err.message)
+            console.log("Error al añadir aula: " + aulaObj.acronimo + ',' + aulaObj.nombre + ',' + aulaObj.capacidad + ',' + aulaObj.edificio)
+        } else {
+            res.status(200).send("Aula añadida")
+        }
+    });
+});
+
+// Editar un aula
+router.put('/editarAula/:id', (req, res) => {
+    const {id} = req.params;
+    const aulaObj = {
+        acronimo: req.body.acronimo,
+        nombre: req.body.nombre,
+        capacidad: req.body.capacidad,
+        edificio: req.body.edificio
+    }
+    const updateQueryAula =`UPDATE aulas SET acronimo='${aulaObj.acronimo}', nombre='${aulaObj.nombre}', capacidad='${aulaObj.capacidad}', edificio='${aulaObj.edificio}' WHERE id=${id}`;
+    connection.query(updateQueryAula, error => {
+        if (error) throw error;
+        res.send('Aula actualizada');
+    });
+});
+
+// Eliminar un aula
+router.delete('/eliminarAula', (req, res) => {
+    const aulaObj = {
+        id: req.body.id
+    }
+    const sql = `DELETE FROM aulas WHERE id=${aulaObj.id}`;
+
+    connection.query(sql, error => {
+        if (error) throw error;
+        res.send('Aula eliminada');
     });
 });
 
