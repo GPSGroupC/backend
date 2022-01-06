@@ -32,8 +32,8 @@ function eliminarFichero (path) {
 // Importar un CSV con asignaturas (se importarán automáticamente todos los planes relativos a dichas a asignaturas)
 router.post('/importarAsignaturas', fileUpload, (req,res) => {
 
-    const insertQueryAsignaturas = "INSERT into asignaturas (codasig,nombre,codarea,codplan,curso,periodo,vinculo,destvinculo,numgrupos,alumprev,horasestteoria,horasprofteoria," +
-    "horasestproblemas,horasprofproblemas,horasestpracticas,horasprofpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)"
+    const insertQueryAsignaturas = "INSERT into asignaturas (codasig,nombre,area,codplan,plan,curso,periodo,vinculo,destvinculo,numgrupos,alumprev,horasestteoria,horasprofteoria," +
+    "horasestproblemas,horasprofproblemas,horasestpracticas,horasprofpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)"
     const insertQueryPlanes = "INSERT into planes (codplan,nombre,numcursos,numperiodos,numgrupos) VALUES ($1,$2,$3,$4,$5)"
     const selectQueryPlanes = "SELECT * from planes WHERE codplan = $1"
 
@@ -64,13 +64,13 @@ router.post('/importarAsignaturas', fileUpload, (req,res) => {
     lineReader.eachLine(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'), function(line) {
         if(i > 2) {
             var fieldsArray = line.split(';')
-            //console.log(fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[6] + ',' + fieldsArray[11] + ',' + fieldsArray[12] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
+            //console.log(fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[7] + ',' + fieldsArray[11] + ',' + fieldsArray[12] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
             //+ ',' + fieldsArray[23] + ',' + fieldsArray[24] + ',' + fieldsArray[30] + ',' + fieldsArray[31] + ',' + fieldsArray[32] + ',' + fieldsArray[33] + ',' + fieldsArray[34] + ',' + fieldsArray[35])
-            connection.query(insertQueryAsignaturas,[fieldsArray[3],fieldsArray[4],fieldsArray[6],fieldsArray[11],fieldsArray[17],fieldsArray[18],fieldsArray[21],fieldsArray[22],fieldsArray[23],
+            connection.query(insertQueryAsignaturas,[fieldsArray[3],fieldsArray[4],fieldsArray[7],fieldsArray[11],fieldsArray[12],fieldsArray[17],fieldsArray[18],fieldsArray[21],fieldsArray[22],fieldsArray[23],
                 fieldsArray[24],fieldsArray[30],fieldsArray[31],fieldsArray[32],fieldsArray[33],fieldsArray[34],fieldsArray[35],true], err =>{
                 if(err){
                     console.log(err.message)
-                    console.log("Error al insertar asignatura: " + fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[6] + ',' + fieldsArray[11] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
+                    console.log("Error al insertar asignatura: " + fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[7] + ',' + fieldsArray[11] + ',' + fieldsArray[12] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
                     + ',' + fieldsArray[23] + ',' + fieldsArray[24] + ',' + fieldsArray[30] + ',' + fieldsArray[31] + ',' + fieldsArray[32] + ',' + fieldsArray[33] + ',' + fieldsArray[34] + ',' + fieldsArray[35])
                 }
             });
@@ -104,8 +104,8 @@ router.post('/importarAsignaturas', fileUpload, (req,res) => {
 // Añadir un CSV con asignaturas (en este caso, no se eliminan las asignaturas que se habían importado/añadido anteriormente)
 router.post('/anyadirAsignaturas', fileUpload, (req,res) => {
 
-    const insertQueryAsignaturas = "INSERT into asignaturas (codasig,nombre,codarea,codplan,curso,periodo,vinculo,destvinculo,numgrupos,alumprev,horasestteoria,horasprofteoria," +
-    "horasestproblemas,horasprofproblemas,horasestpracticas,horasprofpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)"
+    const insertQueryAsignaturas = "INSERT into asignaturas (codasig,nombre,area,codplan,plan,curso,periodo,vinculo,destvinculo,numgrupos,alumprev,horasestteoria,horasprofteoria," +
+    "horasestproblemas,horasprofproblemas,horasestpracticas,horasprofpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)"
     const insertQueryPlanes = "INSERT into planes (codplan,nombre,numcursos,numperiodos,numgrupos) VALUES ($1,$2,$3,$4,$5)"
     const selectQueryPlanes = "SELECT * from planes WHERE codplan = $1"
 
@@ -118,13 +118,13 @@ router.post('/anyadirAsignaturas', fileUpload, (req,res) => {
     lineReader.eachLine(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'), function(line) {
         if(i > 2) {
             var fieldsArray = line.split(';')
-            //console.log(fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[6] + ',' + fieldsArray[11] + ',' + fieldsArray[12] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
+            //console.log(fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[7] + ',' + fieldsArray[11] + ',' + fieldsArray[12] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
             //+ ',' + fieldsArray[23] + ',' + fieldsArray[24] + ',' + fieldsArray[30] + ',' + fieldsArray[31] + ',' + fieldsArray[32] + ',' + fieldsArray[33] + ',' + fieldsArray[34] + ',' + fieldsArray[35])
-            connection.query(insertQueryAsignaturas,[fieldsArray[3],fieldsArray[4],fieldsArray[6],fieldsArray[11],fieldsArray[17],fieldsArray[18],fieldsArray[21],fieldsArray[22],fieldsArray[23],
+            connection.query(insertQueryAsignaturas,[fieldsArray[3],fieldsArray[4],fieldsArray[7],fieldsArray[11],fieldsArray[12],fieldsArray[17],fieldsArray[18],fieldsArray[21],fieldsArray[22],fieldsArray[23],
                 fieldsArray[24],fieldsArray[30],fieldsArray[31],fieldsArray[32],fieldsArray[33],fieldsArray[34],fieldsArray[35],false], err =>{
                 if(err){
                     console.log(err.message)
-                    console.log("Error al insertar asignatura: " + fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[6] + ',' + fieldsArray[11] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
+                    console.log("Error al insertar asignatura: " + fieldsArray[3] + ',' + fieldsArray[4] + ',' + fieldsArray[7] + ',' + fieldsArray[11] + ',' + fieldsArray[12] + ',' + fieldsArray[17] + ',' + fieldsArray[18] + ',' + fieldsArray[21] + ',' + fieldsArray[22]
                     + ',' + fieldsArray[23] + ',' + fieldsArray[24] + ',' + fieldsArray[30] + ',' + fieldsArray[31] + ',' + fieldsArray[32] + ',' + fieldsArray[33] + ',' + fieldsArray[34] + ',' + fieldsArray[35])
                 }
             });
@@ -154,61 +154,29 @@ router.post('/anyadirAsignaturas', fileUpload, (req,res) => {
     res.status(200).send("Asignaturas añadidas")
 })
 
-
-// Importar un CSV con las aulas
-router.post('/importarAulas', fileUpload, (req,res) => {
-    const insertQueryAulas = "INSERT into aulas (id,acronimo,nombre,capacidad,edificio) VALUES ($1,$2,$3,$4,$5)"
-
-    // Vacíamos la tabla
-    connection.query("TRUNCATE TABLE aulas");
-
-    // Transformamos el fichero .xlsx en .csv
-    const excel = XLSX.readFile(path.join(__dirname, '../files/' + req.file.filename));
-    XLSX.writeFile(excel, path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'), { bookType: "csv", FS: ';'});
-
-    // Leemos el fichero línea por línea
-    var i = 0
-    lineReader.eachLine(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'), function(line) {
-        if(i > 0) {
-            line = line.replace(/\"/g,"")
-            var fieldsArray = line.split(';')
-            connection.query(insertQueryAulas,[fieldsArray[0],fieldsArray[1],fieldsArray[2],fieldsArray[3],fieldsArray[4]], err =>{
-                if(err){
-                    console.log(err.message)
-                    console.log("Error al insertar aula: " + fieldsArray[0] + ',' + fieldsArray[1] + ',' + fieldsArray[2] + ',' + fieldsArray[3] + ',' + fieldsArray[4])
-                }
-            });
-        }
-        i++
-    });
-
-    // Eliminamos los ficheros para que no ocupen espacio en el server
-    //eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.csv'));
-    //eliminarFichero(path.join(__dirname, '../files/' + path.parse(req.file.filename).name + '.xlsx'));
-
-    res.status(200).send("Aulas importadas")
-})
-
 // Añadir una asignatura
 router.post('/anyadirAsignatura', (req, res) => {
     const asignaturaObj = {
         codasig: req.body.codasig,
         nombre: req.body.nombre,
-        codarea: req.body.codarea,
+        area: req.body.area,
         codplan: req.body.codplan,
+        plan: req.body.plan,
         curso: req.body.curso,
         periodo: req.body.periodo,
+        destvinculo: req.body.destvinculo,
         horasestteoria: req.body.horasestteoria,
         horasestproblemas: req.body.horasestproblemas,
         horasestpracticas: req.body.horasestpracticas
     }
-    const insertQueryAsignatura = "INSERT into asignaturas (codasig,nombre,codarea,codplan,curso,periodo,horasestteoria,horasestproblemas,horasestpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)"
-    connection.query(insertQueryAsignatura,[asignaturaObj.codasig,asignaturaObj.nombre,asignaturaObj.codarea,asignaturaObj.codplan,asignaturaObj.curso,asignaturaObj.periodo,asignaturaObj.horasestteoria,asignaturaObj.horasestproblemas,asignaturaObj.horasestpracticas,false], err => {
+    const insertQueryAsignatura = "INSERT into asignaturas (codasig,nombre,area,codplan,plan,curso,periodo,destvinculo,horasestteoria,horasestproblemas,horasestpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id"
+    connection.query(insertQueryAsignatura,[asignaturaObj.codasig,asignaturaObj.nombre,asignaturaObj.area,asignaturaObj.codplan,asignaturaObj.plan,asignaturaObj.curso,asignaturaObj.periodo,asignaturaObj.destvinculo,asignaturaObj.horasestteoria,asignaturaObj.horasestproblemas,asignaturaObj.horasestpracticas,false], (err, result) => {
         if(err) {
             console.log(err.message)
-            console.log("Error al añadir asignatura: " + asignaturaObj.codasig + ',' + asignaturaObj.nombre + ',' + asignaturaObj.codarea + ',' + asignaturaObj.codplan + ',' + asignaturaObj.curso + ',' + asignaturaObj.periodo + ',' + asignaturaObj.horasestteoria + ',' + asignaturaObj.horasestproblemas + ',' + asignaturaObj.horasestpracticas)
+            console.log("Error al añadir asignatura: " + asignaturaObj.codasig + ',' + asignaturaObj.nombre + ',' + asignaturaObj.area + ',' + asignaturaObj.codplan + ',' + asignaturaObj.plan + ',' + asignaturaObj.curso + ',' + asignaturaObj.periodo + ',' + asignaturaObj.destvinculo + ',' + asignaturaObj.horasestteoria + ',' + asignaturaObj.horasestproblemas + ',' + asignaturaObj.horasestpracticas)
+            res.status(500).send("Error al añadir asignatura")
         } else {
-            res.status(200).send("Asignatura añadida")
+            res.status(200).send("" + result.rows[0].id + "")
         }
     });
 })
@@ -221,8 +189,12 @@ router.delete('/eliminarAsignatura', (req, res) => {
     const sql = `DELETE FROM asignaturas WHERE id=${asignaturaObj.id}`;
 
     connection.query(sql, error => {
-        if (error) throw error;
-        res.send('Asignatura eliminada');
+        if (error) {
+            console.log(error.message)
+            res.status(500).send("Error al eliminar asignatura")
+        } else {
+            res.status(200).send('Asignatura eliminada');
+        }
     });
 });
 
@@ -232,25 +204,31 @@ router.put('/editarAsignatura/:id', (req, res) => {
     const asignaturaObj = {
         codasig: req.body.codasig,
         nombre: req.body.nombre,
-        codarea: req.body.codarea,
+        area: req.body.area,
         codplan: req.body.codplan,
+        plan: req.body.plan,
         curso: req.body.curso,
         periodo: req.body.periodo,
+        destvinculo: req.body.destvinculo,
         horasestteoria: req.body.horasestteoria,
         horasestproblemas: req.body.horasestproblemas,
         horasestpracticas: req.body.horasestpracticas
     }
-    const updateQueryAsignatura =`UPDATE asignaturas SET codasig='${asignaturaObj.codasig}', nombre='${asignaturaObj.nombre}', codarea='${asignaturaObj.codarea}', codplan='${asignaturaObj.codplan}', curso='${asignaturaObj.curso}',
-    periodo='${asignaturaObj.periodo}', horasestteoria='${asignaturaObj.horasestteoria}', horasestproblemas='${asignaturaObj.horasestproblemas}', horasestpracticas='${asignaturaObj.horasestpracticas}' WHERE id=${id}`;
+    const updateQueryAsignatura =`UPDATE asignaturas SET codasig='${asignaturaObj.codasig}', nombre='${asignaturaObj.nombre}', area='${asignaturaObj.area}', codplan='${asignaturaObj.codplan}', plan='${asignaturaObj.plan}', curso='${asignaturaObj.curso}',
+    periodo='${asignaturaObj.periodo}', destvinculo='${asignaturaObj.destvinculo}', horasestteoria='${asignaturaObj.horasestteoria}', horasestproblemas='${asignaturaObj.horasestproblemas}', horasestpracticas='${asignaturaObj.horasestpracticas}' WHERE id=${id}`;
     connection.query(updateQueryAsignatura, error => {
-        if (error) throw error;
-        res.send('Asignatura actualizada');
+        if (error) {
+            console.log(error.message)
+            res.status(500).send("Error al editar asignatura")
+        } else {
+            res.status(200).send('Asignatura actualizada');
+        }
     });
 });
 
 // Obtener todas las asignaturas almacenadas en la base de datos
 router.get('/obtenerAsignaturas', (req, res) => {
-    connection.query("SELECT * FROM asignaturas",(err, result) => {
+    connection.query("SELECT * FROM asignaturas ORDER BY id",(err, result) => {
         if (err) throw err;
         if (result.rowCount > 0) {
             console.log("Obtenidas " + result.rowCount + " asignaturas");
@@ -265,7 +243,7 @@ router.get('/obtenerAsignaturas', (req, res) => {
 
 // Obtener todas las asignaturas de un plan, curso y periodo concretos (se usaría para obtener las asignaturas que se pueden agregar al crear un horario específico)
 router.get('/obtenerAsignaturasHorario', (req, res) => {
-    const selectQueryAsignaturas = "SELECT * FROM asignaturas WHERE codplan = $1 AND curso = $2 AND periodo = $3"
+    const selectQueryAsignaturas = "SELECT * FROM asignaturas WHERE codplan = $1 AND curso = $2 AND periodo = $3 ORDER BY id"
 
     const asignaturaObj = {
         codplan: req.body.codplan,
@@ -286,19 +264,11 @@ router.get('/obtenerAsignaturasHorario', (req, res) => {
     });
 });
 
-// Obtener todos los planes almacenados en la base de datos (se usaría para que el usuario pueda elegir para que plan quiere crear un nuevo horario)
-router.get('/obtenerPlanes', (req, res) => {
-    connection.query("SELECT * FROM planes",(err, result) => {
-        if (err) throw err;
-        if (result.rowCount > 0) {
-            console.log("Obtenidos " + result.rowCount + " planes");
-            res.json(result.rows);
-        }else {
-            res.json({
-                message: 'No hay planes almacenados'
-            })
-        }
-    });
+// Vaciar tablas de asignaturas y planes
+router.delete('/vaciarAsignaturas', (req, res) => {
+    connection.query("TRUNCATE TABLE asignaturas RESTART IDENTITY");
+    connection.query("TRUNCATE TABLE planes")
+    res.status(200).send("Tabla asignaturas truncada")
 });
 
 module.exports = router;

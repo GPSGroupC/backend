@@ -10,7 +10,8 @@ app.use(express.urlencoded({extended : true}));
 app.use(cors(corsOptions));
 
 //Routes
-app.use(require('./routes/horarios'));
+app.use(require('./routes/asignaturas'));
+app.use(require('./routes/aulas'));
 app.use(require('./routes/calendarios_controller.js'));
 
 
