@@ -2,11 +2,12 @@
 const express = require('express');
 const cors = require('cors')
 const app = express();
+const corsOptions = require('./config/cors_configuration')
 
 
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
-app.use(cors());
+app.use(cors(corsOptions));
 
 //Routes
 app.use(require('./routes/horarios'));

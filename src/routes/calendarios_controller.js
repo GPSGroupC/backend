@@ -3,7 +3,6 @@ const router = express.Router();
 const Parser = require('../utils/parser');
 const {connection, pgPromiseDB, pgp} = require('../db/conexion')
 
-
 const calendar = [
     "2022" , "2023"
 ]
