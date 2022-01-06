@@ -125,8 +125,8 @@ router.put('/calendar/updateSemester',(req, res) =>{
     const diasSemestre = req.body.semester
     const semesterName = req.body.semesterName
     const curso = req.body.course
-    const InsertQuery = 'INSERT into semanas(semestername,cursocalendario,tipo,diafecha,docencia,semana_a_b,horariocambiado) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (diafecha) ' +
-    'DO UPDATE SET docencia=$5,semana_a_b=$6,horariocambiado=$7'
+    const InsertQuery = 'INSERT into semanas(semestername,cursocalendario,tipo,diafecha,docencia,semana_a_b,horariocambiado,festividad) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (diafecha) ' +
+    'DO UPDATE SET docencia=$5,semana_a_b=$6,horariocambiado=$7,festividad=$8'
     const queriesToBeSent = []
         
     var promise = new Promise(function(resolve, reject) {
@@ -135,7 +135,7 @@ router.put('/calendar/updateSemester',(req, res) =>{
                 //Devuelve el String de JSONs como un objeto de jsones
                 jsonedDate = JSON.parse(fecha)
                 const queryObject = {query: InsertQuery, values: [semesterName,curso,"Grado",
-                jsonedDate.date,jsonedDate.type,jsonedDate.semanaAB,jsonedDate.horarioCambiado]}
+                jsonedDate.date,jsonedDate.type,jsonedDate.semanaAB,jsonedDate.horarioCambiado,jsonedDate.description]}
                 queriesToBeSent.push(queryObject)
             } catch(sysntaxError){
                 reject(sysntaxError)
@@ -186,7 +186,7 @@ router.get('/calendar/getCalendar',(req, res) =>{
 
 router.get('/calendar/getDaysCalendar', async (req,res) =>{
 
-    const SELECT_QUERY = "SELECT diafecha,semestername,semana_a_b,docencia,horariocambiado FROM semanas WHERE cursocalendario=$1 AND semestername=$2";
+    const SELECT_QUERY = "SELECT diafecha,semestername,semana_a_b,docencia,horariocambiado,festividad FROM semanas WHERE cursocalendario=$1 AND semestername=$2";
     //Curso y semestre del que queremos obtener la informacion de los dias.
     const cursoPedido = req.query.cursoCalendario
     const semestrePedido = req.query.semesterName
