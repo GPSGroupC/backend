@@ -50,18 +50,12 @@ router.get('/calendar/grades/:course', (req, res) =>{
 
 router.post('/calendar/updateCalendar',(req, res) =>{
     
-    let date = new Date()
-    const lUpdate = date.getDay() + "-" + (date.getMonth() + 1) + "-" +date.getFullYear()   
+    const lUpdate = Parser.formatDate(new Date()) 
     const data = {
         date_start1: Parser.formatDate(req.body.fecha_inicio_1),
         date_start2: Parser.formatDate(req.body.fecha_inicio_2),
         date_startSeptember: Parser.formatDate(req.body.convSeptiembre),
-        //fecha_fin_1 : req.body.fecha_fin_1,
-        //fecha_fin_2 : req.body.fecha_fin_2,
-       // fecha_inicio_ev1 : req.body.fecha_inicio_ev_1,
-        //fecha_inicio_ev2 : req.body.fecha_inicio_ev_2,
-        //fecha_fin_ev_1 : req.body.fecha_fin_ev_1,
-        //fecha_fin_ev_2 : req.body.fecha_fin_ev_2,
+        date_endSeptember : Parser.formatDate(req.body.finconvSeptiembre),
         course : req.body.course,
         lastUpdate: lUpdate,
         grade: "Grado",
@@ -74,8 +68,8 @@ router.post('/calendar/updateCalendar',(req, res) =>{
             res.status(500).send("Server error finding course")
         }else{
             if(result.rowCount === 0){              
-                const insertQuery = "INSERT into calendario (tipo,curso,fechainicio1,fechainicio2,fechainiciosept,fechaultmodificacion) VALUES ($1,$2,$3,$4,$5,$6)"
-                connection.query(insertQuery,[data.grade,data.course,data.date_start1,data.date_start2,data.date_startSeptember,data.lastUpdate], err =>{
+                const insertQuery = "INSERT into calendario (tipo,curso,fechainicio1,fechainicio2,fechainiciosept,fechafinsept,fechaultmodificacion) VALUES ($1,$2,$3,$4,$5,$6)"
+                connection.query(insertQuery,[data.grade,data.course,data.date_start1,data.date_start2,data.date_startSeptember,data.date_endSeptember,data.lastUpdate], err =>{
                     if(err){
                         console.log(err.message)
                         res.status(500).send("Server Error on insert")
@@ -85,8 +79,8 @@ router.post('/calendar/updateCalendar',(req, res) =>{
                     }
                 })
             }else{
-                const updateQuery = "UPDATE calendario SET fechainicio1=$1, fechainicio2=$2,fechainiciosept=$3, fechaultmodificacion=$4 WHERE curso = $5"
-                connection.query(updateQuery,[data.date_start1,data.date_start2,data.date_startSeptember,data.lastUpdate,data.course], err =>{
+                const updateQuery = "UPDATE calendario SET fechainicio1=$1, fechainicio2=$2,fechainiciosept=$3,fechafinsept=$4,fechaultmodificacion=$5 WHERE curso = $6"
+                connection.query(updateQuery,[data.date_start1,data.date_start2,data.date_startSeptember,data.date_endSeptember,data.lastUpdate,data.course], err =>{
                     if(err){
                         console.log(err.message)
                         res.status(500).send("Server Error on update")
