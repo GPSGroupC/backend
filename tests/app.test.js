@@ -10,7 +10,8 @@ describe('Testing Calendar API', () =>{
         course:"1949-1950",
         fecha_inicio_1:"09-09-2049",
         fecha_inicio_2:"09-02-2050",
-        convSeptiembre:"09-09-2050"
+        convSeptiembre:"09-09-2050",
+        finconvSeptiembre:"19-09-2050",
     }
     
     it('GET /calendar/id RESTFUL ', (done) => {
@@ -53,6 +54,7 @@ describe('Testing Calendar API', () =>{
             .query({course: data.course})
             .expect('Content-Type', 'application/json; charset=utf-8')
             .expect(200, ( _ , res) =>{
+                console.log(res.body);
                 const expectedCourse = res.body[0].curso
                 const actualCourse = data.course               
                 expect(expectedCourse).toEqual(actualCourse) 

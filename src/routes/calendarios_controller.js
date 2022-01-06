@@ -68,7 +68,7 @@ router.post('/calendar/updateCalendar',(req, res) =>{
             res.status(500).send("Server error finding course")
         }else{
             if(result.rowCount === 0){              
-                const insertQuery = "INSERT into calendario (tipo,curso,fechainicio1,fechainicio2,fechainiciosept,fechafinsept,fechaultmodificacion) VALUES ($1,$2,$3,$4,$5,$6)"
+                const insertQuery = "INSERT into calendario (tipo,curso,fechainicio1,fechainicio2,fechainiciosept,fechafinsept,fechaultmodificacion) VALUES ($1,$2,$3,$4,$5,$6,$7)"
                 connection.query(insertQuery,[data.grade,data.course,data.date_start1,data.date_start2,data.date_startSeptember,data.date_endSeptember,data.lastUpdate], err =>{
                     if(err){
                         console.log(err.message)
