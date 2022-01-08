@@ -118,7 +118,7 @@ router.put('/listadoClases/:idhorario', (req, res) => {
 // Obtener todas las clases del tablero de un horario concreto
 router.get('/listadoClases', (req, res) => {
     const selectQueryClases = "SELECT * FROM clases WHERE idhorario = $1 ORDER BY dia,hora"
-    connection.query(selectQueryClases, [req.body.idhorario], (err, result) => {
+    connection.query(selectQueryClases, [req.query.idhorario], (err, result) => {
         if (err) throw err;
         if (result.rowCount > 0) {
             console.log("Obtenidas " + result.rowCount + " clases");

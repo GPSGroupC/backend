@@ -246,9 +246,9 @@ router.get('/obtenerAsignaturasHorario', (req, res) => {
     const selectQueryAsignaturas = "SELECT * FROM asignaturas WHERE codplan = $1 AND curso = $2 AND periodo = $3 ORDER BY id"
 
     const asignaturaObj = {
-        codplan: req.body.codplan,
-        curso: req.body.curso,
-        periodo: req.body.periodo
+        codplan: req.query.codplan,
+        curso: req.query.curso,
+        periodo: req.query.periodo
     };
 
     connection.query(selectQueryAsignaturas, [asignaturaObj.codplan,asignaturaObj.curso,asignaturaObj.periodo], (err, result) => {
