@@ -152,7 +152,7 @@ describe('Testing Asignaturas y Aulas API', () =>{
     it('GET /obtenerAsignaturasHorario Obtener las asignaturas de un horario en concreto', (done) => {
         request(app)
         .get('/obtenerAsignaturasHorario')
-        .send({codplan:"512",
+        .query({codplan:"512",
                 curso:"1",
                 periodo:"S1"})
         .expect('Content-Type', 'application/json; charset=utf-8')
