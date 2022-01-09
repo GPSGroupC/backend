@@ -125,7 +125,7 @@ router.put('/calendar/updateSemester',(req, res) =>{
     const diasSemestre = req.body.semester
     const semesterName = req.body.semesterName
     const curso = req.body.course
-    const InsertQuery = 'INSERT into semanas(semestername,cursocalendario,tipo,diafecha,docencia,semana_a_b,horariocambiado,festividad) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (diafecha) ' +
+    const InsertQuery = 'INSERT into semanas(semestername,cursocalendario,tipo,diafecha,docencia,semana_a_b,horariocambiado,festividad) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (cursocalendario,diafecha) ' +
     'DO UPDATE SET docencia=$5,semana_a_b=$6,horariocambiado=$7,festividad=$8'
     const queriesToBeSent = []
         
