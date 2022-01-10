@@ -1,9 +1,15 @@
 const request = require('supertest');
 const app = require('../src/index');
 const path = require('path');
+const Dia = require('./testFakes');
+const { Console } = require('console');
+const res = require('express/lib/response');
+const { Http2ServerResponse } = require('http2');
 
 describe('Testing Calendar API', () =>{
-
+   
+    const fakeDay = new Dia("12/09/2050","festivo",null,"A",null)
+    var fulfilledPromise
 
     const data = {
         tipo:"Grado",
@@ -13,7 +19,14 @@ describe('Testing Calendar API', () =>{
         convSeptiembre:"09-09-2050",
         finconvSeptiembre:"19-09-2050",
     }
-    
+
+    const fakeCalendarsDayData = {
+        course: data.course,
+        semesterName: "semestre1",
+        semester: fakeDay.createFakeDayInfo()
+
+    }
+       
     it('GET /calendar/id RESTFUL ', (done) => {
         request(app)
         .get('/calendar/grades/2022')
@@ -54,7 +67,6 @@ describe('Testing Calendar API', () =>{
             .query({course: data.course})
             .expect('Content-Type', 'application/json; charset=utf-8')
             .expect(200, ( _ , res) =>{
-                console.log(res.body);
                 const expectedCourse = res.body[0].curso
                 const actualCourse = data.course               
                 expect(expectedCourse).toEqual(actualCourse) 
@@ -66,6 +78,34 @@ describe('Testing Calendar API', () =>{
         
     })
 
+    it('PUT /calendar/updateSemester Test para comprobar el endpoint updateSemester cuando se actualizan los dias de un semestre', ()=>{
+        
+        request(app)
+        .post('/calendar/updateCalendar')
+        .send(data)
+        .then( () => {
+             request(app)
+            .put('/calendar/updateSemester')
+            .send(fakeCalendarsDayData)
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .expect(200, (_, response)=>{
+                expect(response.status).toEqual(200)
+                expect(response.text).toEqual("OK")
+                request(app)
+                    .delete('/calendar/deleteCalendar/' + data.course)
+                    .expect('Content-Type', 'application/json; charset=utf-8')
+                    .expect(200, (_ ,response) =>{
+                        expect(response.body.rowCount).toEqual("1")
+                    })
+            })
+                
+        })
+            
+       
+
+    })
+
+
     it('GET /calendar/getCalendar Test para comprobar el endpoint getCalendar cuando se pide un calendario no existente', () =>{
         request(app)
         .get('/calendar/getCalendar')
@@ -75,18 +115,20 @@ describe('Testing Calendar API', () =>{
             //Esperamos que el tipo de respuesta sea del tipo 204 , calendar not found
             expect(response.status).toEqual(204)
         })
+        
     })
 
-    it('DELETE /calendar/deleteCalendar/:curso Elimina un calendario del curso que se le indique ', function(done) {
-      
+    it('DELETE /calendar/deleteCalendar/:curso Intenta eliminar un curso que no existe de la tabla calendarios ', function(done) {
+        
         request(app)
-        .delete('/calendar/deleteCalendar/' + data.course)
-        .expect('Content-Type', 'application/json; charset=utf-8')
-        .expect(200, (_ ,response) =>{
-            expect(response.body.rowCount).toEqual("1")
-            done();
-        })
-       
+            .delete('/calendar/deleteCalendar/' + "1500-1501")
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .expect(200, (_ ,response) =>{
+                //El número de filas borradas en la tabla calendarias debería ser 0
+                expect(response.body.rowCount).toEqual("0")
+                done();
+       })
+        
         
     })
 
