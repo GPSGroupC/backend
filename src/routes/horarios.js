@@ -22,6 +22,21 @@ router.post('/anyadirHorario', (req, res) => {
     });
 });
 
+// Obtener todos los horarios almacenados en la base de datos
+router.get('/obtenerHorarios', (req, res) => {
+    connection.query("SELECT * FROM horario ORDER BY id",(err, result) => {
+        if (err) throw err;
+        if (result.rowCount > 0) {
+            console.log("Obtenidos " + result.rowCount + " horarios");
+            res.json(result.rows);
+        }else {
+            res.json({
+                message: 'No hay horarios almacenados'
+            })
+        }
+    });
+});
+
 // Eliminar un horario
 router.delete('/eliminarHorario', (req, res) => {
     const horarioObj = {
