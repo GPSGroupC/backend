@@ -2,14 +2,11 @@ const request = require('supertest');
 const app = require('../src/index');
 const path = require('path');
 const Dia = require('./testFakes');
-const { Console } = require('console');
 const res = require('express/lib/response');
-const { Http2ServerResponse } = require('http2');
 
 describe('Testing Calendar API', () =>{
    
     const fakeDay = new Dia("12/09/2050","festivo",null,"A",null)
-    var fulfilledPromise
 
     const data = {
         tipo:"Grado",
@@ -92,18 +89,31 @@ describe('Testing Calendar API', () =>{
                 expect(response.status).toEqual(200)
                 expect(response.text).toEqual("OK")
                 request(app)
+                .get("/calendar/getDaysCalendar")
+                .query({cursoCalendario: fakeCalendarsDayData.course ,semesterName:fakeCalendarsDayData.semesterName})
+                .expect('Content-Type', 'application/json; charset=utf-8')
+                .expect(200, ( _ , response) => {
+                    const statusCode = response.body.status
+                    const actualJSONBody = response.body.message
+                    const expectedJSONBody = JSON.stringify(fakeDay.createFakeDayAsObject(fakeCalendarsDayData.semesterName))
+                    //Comprobamos que el statusCode es 200 y que el cuerpo de la respuesta corresponda con el que hemos utilizado
+                    expect(statusCode).toEqual("200")
+                    expect(JSON.stringify(actualJSONBody[0])).toEqual(expectedJSONBody)
+                    //Borramos el calendario acto seguido eliminando consigo todas sus fechas añadidas  
+                    request(app)
                     .delete('/calendar/deleteCalendar/' + data.course)
                     .expect('Content-Type', 'application/json; charset=utf-8')
                     .expect(200, (_ ,response) =>{
                         expect(response.body.rowCount).toEqual("1")
                     })
+                 })
+                
             })
                 
         })
-            
-       
 
     })
+
 
 
     it('GET /calendar/getCalendar Test para comprobar el endpoint getCalendar cuando se pide un calendario no existente', () =>{
