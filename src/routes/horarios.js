@@ -8,13 +8,14 @@ router.post('/anyadirHorario', (req, res) => {
         codplan: req.body.codplan,
         curso: req.body.curso,
         periodo: req.body.periodo,
-        grupo: req.body.grupo
+        grupo: req.body.grupo,
+        descripcion: req.body.descripcion
     }
-    const insertQueryHorario = "INSERT into horario (codplan,curso,periodo,grupo) VALUES ($1,$2,$3,$4) RETURNING id"
+    const insertQueryHorario = "INSERT into horario (codplan,curso,periodo,grupo,descripcion) VALUES ($1,$2,$3,$4,$5) RETURNING id"
     connection.query(insertQueryHorario, [horarioObj.codplan, horarioObj.curso, horarioObj.periodo, horarioObj.grupo], (err, result) => {
         if (err) {
             console.log(err.message)
-            console.log("Error al añadir horario: " + horarioObj.codplan + ',' + horarioObj.curso + ',' + horarioObj.periodo + ',' + horarioObj.grupo)
+            console.log("Error al añadir horario: " + horarioObj.codplan + ',' + horarioObj.curso + ',' + horarioObj.periodo + ',' + horarioObj.grupo + ',' + horarioObj.descripcion)
             res.status(500).send("Error al añadir horario")
         } else {
             res.status(200).send("" + result.rows[0].id + "")
