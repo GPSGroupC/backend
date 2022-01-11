@@ -12,7 +12,7 @@ router.post('/anyadirHorario', (req, res) => {
         descripcion: req.body.descripcion
     }
     const insertQueryHorario = "INSERT into horario (codplan,curso,periodo,grupo,descripcion) VALUES ($1,$2,$3,$4,$5) RETURNING id"
-    connection.query(insertQueryHorario, [horarioObj.codplan, horarioObj.curso, horarioObj.periodo, horarioObj.grupo], (err, result) => {
+    connection.query(insertQueryHorario, [horarioObj.codplan, horarioObj.curso, horarioObj.periodo, horarioObj.grupo, horarioObj.descripcion], (err, result) => {
         if (err) {
             console.log(err.message)
             console.log("Error al añadir horario: " + horarioObj.codplan + ',' + horarioObj.curso + ',' + horarioObj.periodo + ',' + horarioObj.grupo + ',' + horarioObj.descripcion)
