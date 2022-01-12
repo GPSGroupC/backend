@@ -169,6 +169,8 @@ router.post('/anyadirAsignatura', (req, res) => {
         horasestproblemas: req.body.horasestproblemas,
         horasestpracticas: req.body.horasestpracticas
     }
+    const insertQueryPlanes = "INSERT into planes (codplan,nombre,numcursos,numperiodos,numgrupos) VALUES ($1,$2,$3,$4,$5)"
+    const selectQueryPlanes = "SELECT * from planes WHERE codplan = $1"
     const insertQueryAsignatura = "INSERT into asignaturas (codasig,nombre,area,codplan,plan,curso,periodo,destvinculo,horasestteoria,horasestproblemas,horasestpracticas,esimportada) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id"
     connection.query(insertQueryAsignatura,[asignaturaObj.codasig,asignaturaObj.nombre,asignaturaObj.area,asignaturaObj.codplan,asignaturaObj.plan,asignaturaObj.curso,asignaturaObj.periodo,asignaturaObj.destvinculo,asignaturaObj.horasestteoria,asignaturaObj.horasestproblemas,asignaturaObj.horasestpracticas,false], (err, result) => {
         if(err) {
@@ -176,6 +178,20 @@ router.post('/anyadirAsignatura', (req, res) => {
             console.log("Error al añadir asignatura: " + asignaturaObj.codasig + ',' + asignaturaObj.nombre + ',' + asignaturaObj.area + ',' + asignaturaObj.codplan + ',' + asignaturaObj.plan + ',' + asignaturaObj.curso + ',' + asignaturaObj.periodo + ',' + asignaturaObj.destvinculo + ',' + asignaturaObj.horasestteoria + ',' + asignaturaObj.horasestproblemas + ',' + asignaturaObj.horasestpracticas)
             res.status(500).send("Error al añadir asignatura")
         } else {
+            connection.query(selectQueryPlanes,[asignaturaObj.codplan],(err, result) => {
+                if(err){
+                    //console.log("Server error finding course")
+                }else{
+                    if(result.rowCount === 0){              
+                        connection.query(insertQueryPlanes,[asignaturaObj.codplan,asignaturaObj.plan,'4','2','0'], err => {
+                            if(err){
+                                //console.log(err.message)
+                                //console.log("Error al insertar plan")
+                            }
+                        })
+                    }
+                }
+            });
             res.status(200).send("" + result.rows[0].id + "")
         }
     });
