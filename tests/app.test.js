@@ -407,7 +407,7 @@ describe('Testing Horarios API', () => {
 
     var idhorario = ""
 
-    it('POST /anyadirHorario Añadir un nuevo horario', (done) => {
+    /*it('POST /anyadirHorario Añadir un nuevo horario', (done) => {
         // Añadir horario con éxito
         request(app)
             .post('/anyadirHorario')
@@ -424,7 +424,7 @@ describe('Testing Horarios API', () => {
                 idhorario = response.text  // Guardamos el id para poder eliminarlo en los siguientes tests
                 done();
             })
-    })
+    })*/
 
     /*it('GET /obtenerHorarios Obtener todo el listado de horarios', (done) => {
         request(app)
