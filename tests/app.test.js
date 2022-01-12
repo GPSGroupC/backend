@@ -343,15 +343,15 @@ describe('Testing Importar Asignaturas y Aulas desde excel API', () =>{
         })
     })
 
-    /*it('GET /obtenerPlanes Obtener todo el listado de planes', (done) => {
+    /it('GET /obtenerPlanes Obtener todo el listado de planes', (done) => {
         request(app)
         .get('/obtenerPlanes')
         .expect('Content-Type', 'application/json; charset=utf-8')
         .expect(200, (_, response) => {
-            expect(response.body.message).toEqual(undefined) // Si no recibe mensaje quiere decir que ha encontrado al menos un plan
+            expect(response.body.message).toEqual('No hay planes almacenados') // Si no recibe mensaje quiere decir que ha encontrado al menos un plan
             done()
         })
-    })*/
+    })
 
     it('POST /importarAulas Importar aulas desde un excel', (done) => {
         request(app)
@@ -401,4 +401,83 @@ describe('Testing Importar Asignaturas y Aulas desde excel API', () =>{
             done()
         })
     })
+})
+
+describe('Testing Horarios API', () => {
+
+    var idhorario = ""
+
+    it('POST /anyadirHorario Añadir un nuevo horario', (done) => {
+        // Añadir horario con éxito
+        request(app)
+            .post('/anyadirHorario')
+            .send({
+                codplan: "558",
+                curso: "1",
+                periodo: "S1",
+                grupo: "1"
+            })
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .expect(200, (_, response) => {
+                expect(response.text).toBeDefined()
+                expect(response.status).toEqual(200)
+                idhorario = response.text  // Guardamos el id para poder eliminarlo en los siguientes tests
+                done();
+            })
+    })
+
+    /*it('GET /obtenerHorarios Obtener todo el listado de horarios', (done) => {
+        request(app)
+            .get('/obtenerHorarios')
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .expect(200, (_, response) => {
+                expect(response.body.message).toEqual('No hay horarios almacenados') // Si no recibe mensaje quiere decir que ha encontrado al menos un horario
+                done()
+            })
+    })*/
+
+    /*it('DELETE /eliminarHorario Eliminar un horario', (done) => {
+        request(app)
+            .delete('/eliminarHorario')
+            .send({ id: idhorario })
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .expect(200, (_, response) => {
+                expect(response.text).toEqual("Horario eliminado")
+                expect(response.status).toEqual(200)
+                done()
+            })
+    })*/
+})
+
+describe('Testing clases API', () => {
+    it('POST /listadoClases/:idhorario Añadir un listado de clases', (done) => {
+        // Añadir listado de clases con éxito
+        request(app)
+            .post('/listadoClases/1')
+            .send({listadoClases:[{
+                codasig:"500",
+                nomasig:"Asignatura 1",
+                dia:"Lunes",
+                hora:"8",
+                duracion:"30",
+                tipo:"Teoría"
+            }]})
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .expect(200, (_, response) => {
+                expect(response.text).toEqual('Listado de clases añadido correctamente')
+                expect(response.status).toEqual(200)
+                done();
+            })
+    })
+
+    /*it('GET /listadoClases Obtener el listado de clases de un horario', (done) => {
+        request(app)
+            .get('/listadoClases')
+            .query({ idhorario:"1" })
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .expect(200, (_, response) => {
+                expect(response.body.message).toEqual('No hay clases almacenadas para ese horario') // Si no recibe mensaje quiere decir que ha encontrado al menos una clase
+                done();
+            })
+    })*/
 })
