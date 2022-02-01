@@ -13,7 +13,7 @@ app.use(cors(corsOptions));
 app.use(require('./routes/asignaturas'));
 app.use(require('./routes/aulas'));
 app.use(require('./routes/horarios'));
-app.use(require('./routes/calendarios_controller.js'));
+app.use(require('./routes/calendarios.js'));
 
 
 module.exports = app;
